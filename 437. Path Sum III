@@ -1,0 +1,121 @@
+437. Path Sum III
+
+
+You are given a binary tree in which each node contains an integer value.
+
+Find the number of paths that sum to a given value.
+
+The path does not need to start or end at the root or a leaf, but it must go downwards (traveling only from parent nodes to child nodes).
+
+The tree has no more than 1,000 nodes and the values are in the range -1,000,000 to 1,000,000.
+
+Example:
+
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+      10
+     /  \
+    5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+
+Return 3. The paths that sum to 8 are:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+3. -3 -> 11
+
+
+
+Solutions:
+
+Time: O(2^n)
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int target=0;
+    int current=0;
+    int sum;
+    public int pathSum(TreeNode root, int sum) {
+        this.sum=sum;
+        pathSumOuter(root,sum);
+        return target;
+    }
+    public void pathSumOuter(TreeNode root,int sum){
+        if(root==null)
+            return;
+        current=0;
+        pathSumInner(root,0);
+        pathSumOuter(root.left,sum);
+        pathSumOuter(root.right,sum);
+    }
+    public void pathSumInner(TreeNode root,int currentSum){
+        if(root==null)
+            return;
+        currentSum=currentSum+root.val;
+        if(currentSum==sum)
+            target++;
+        pathSumInner(root.left,currentSum);
+        pathSumInner(root.right,currentSum);
+    }
+}
+
+
+Time: O(n)  Space: O(n)
+
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int target=0;
+    int sum;
+    HashMap<Integer,Integer> map=new HashMap<>();
+    public int pathSum(TreeNode root, int sum) {
+        this.sum=sum;
+        prefixSum(root,0);
+        return target;
+    }
+    public void prefixSum(TreeNode root,int current){
+        if(root==null)
+            return;
+        current+=root.val;
+        // Current Sum itself can be equals to target
+        if(current==sum)
+            target++;
+        // Prefix sum itself can be equals to target
+        target+=map.getOrDefault(current-sum,0);
+        map.put(current,map.getOrDefault(current,0)+1);
+        prefixSum(root.left,current);
+        prefixSum(root.right,current);
+        map.put(current,map.get(current)-1);
+    }
+}
+
